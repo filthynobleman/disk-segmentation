@@ -24,9 +24,6 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-include("D:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake")
-find_package(CGAL REQUIRED)
-
 
 
 # Include rematching library
@@ -42,10 +39,8 @@ add_library(RMT STATIC  "${CMAKE_SOURCE_DIR}/src/rmt/graph.cpp"
                         "${CMAKE_SOURCE_DIR}/src/rmt/eval.cpp"
                         "${CMAKE_SOURCE_DIR}/src/rmt/io.cpp"
                         "${CMAKE_SOURCE_DIR}/src/rmt/atlas.cpp"
-                        "${CMAKE_SOURCE_DIR}/src/rmt/spectralseg.cpp"
-                        "${CMAKE_SOURCE_DIR}/src/rmt/shapediamseg.cpp"
                         "${CMAKE_SOURCE_DIR}/src/rmt/tutte.cpp")
-target_link_libraries(RMT ${libCUT} Threads::Threads CGAL::CGAL)
+target_link_libraries(RMT ${libCUT} Threads::Threads)
 set_target_properties(RMT PROPERTIES CXX_STANDARD 17)
 
 

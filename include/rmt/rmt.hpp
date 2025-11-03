@@ -21,6 +21,5 @@
 #include <rmt/io.hpp>
 #include <rmt/clean.hpp>
 #include <rmt/atlas.hpp>
-#include <rmt/segmentation.hpp>
 
 #include <cassert>
