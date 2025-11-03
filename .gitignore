@@ -1,0 +1,18 @@
+# Ignore builds and compilations
+build*
+matlab/*mexw64
+
+# Ignore documentations
+doc*
+
+# Ignore installationss
+install*
+
+# Ignore garbage MATLAB files
+matlab/*asv
+
+# Ignore demo, we will add it a proper branch later
+matlab/demo*
+
+# Ignore VSCode settings
+.vscode

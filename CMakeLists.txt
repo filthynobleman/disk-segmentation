@@ -1,0 +1,64 @@
+cmake_minimum_required(VERSION 3.16.0)
+project(ReMatching LANGUAGES C CXX)
+
+
+# Build and install libCUT
+include(ExternalProject)
+ExternalProject_Add(CUT
+                    SOURCE_DIR "${CMAKE_SOURCE_DIR}/ext/cut"
+                    BINARY_DIR "${CMAKE_SOURCE_DIR}/build-cut"
+                    INSTALL_DIR "${CMAKE_SOURCE_DIR}/install"
+                    CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/install")
+
+
+# Include dependencies
+include_directories("${CMAKE_SOURCE_DIR}/ext/eigen")
+include_directories("${CMAKE_SOURCE_DIR}/ext/libigl/include")
+include_directories("${CMAKE_SOURCE_DIR}/ext/json/include")
+include_directories("${CMAKE_SOURCE_DIR}/install/cut/include")
+if(MSVC)
+    set(libCUT "${CMAKE_SOURCE_DIR}/install/cut/lib/cut.lib")
+elseif(UNIX)
+    set(libCUT "${CMAKE_SOURCE_DIR}/install/cut/lib/libcut.a")
+endif()
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+include("D:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake")
+find_package(CGAL REQUIRED)
+
+
+
+# Include rematching library
+include_directories("${CMAKE_SOURCE_DIR}/include")
+add_library(RMT STATIC  "${CMAKE_SOURCE_DIR}/src/rmt/graph.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/mesh.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/voronoifps.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/region.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/reconstruction.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/preprocess.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/clean.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/weightmap.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/eval.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/io.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/atlas.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/spectralseg.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/shapediamseg.cpp"
+                        "${CMAKE_SOURCE_DIR}/src/rmt/tutte.cpp")
+target_link_libraries(RMT ${libCUT} Threads::Threads CGAL::CGAL)
+set_target_properties(RMT PROPERTIES CXX_STANDARD 17)
+
+
+# Installation settings
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/rmt"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/rmt/include")
+install(TARGETS RMT
+        LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/rmt/lib"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/rmt/lib"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/rmt/bin")
+
+
+# Ours UV mapping demo
+add_executable(OptimAtlas "${CMAKE_SOURCE_DIR}/src/apps/optimatlas.cpp")
+target_link_libraries(OptimAtlas RMT)
+set_target_properties(OptimAtlas PROPERTIES CXX_STANDARD 17)
